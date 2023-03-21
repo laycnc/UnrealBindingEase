@@ -20,6 +20,7 @@ public:
 
 	// IDetailCustomization interface
 		/** Called when details should be customized */
+	virtual void CustomizeDetails(const TSharedPtr<IDetailLayoutBuilder>& DetailBuilder) override;
 	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
 	// End IDetailCustomization interface
 
@@ -30,8 +31,10 @@ private:
 	void HandleComboBoxChanged(FName InItem, ESelectInfo::Type InSeletionInfo);
 	TSharedRef<SWidget> HandleGenerateWidget(FName InItem);
 	FText HandleComboBoxValueAsText() const;
+	FName GetDelegatePropertyNameValue() const;
 
 private:
+	TWeakPtr<IDetailLayoutBuilder> WeakDetailBuilder;
 	TSharedPtr<IPropertyHandle> DelegateOwnerClassProperty;
 	TSharedPtr<IPropertyHandle> DelegatePropertyNameProperty;
 	TArray<FName> DelegateNames;

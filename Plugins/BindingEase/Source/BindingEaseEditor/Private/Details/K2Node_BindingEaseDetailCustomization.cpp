@@ -17,6 +17,11 @@ TSharedRef<IDetailCustomization> FK2Node_BindingEaseDetailCustomization::MakeIns
 
 // IDetailCustomization interface
 
+void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(const TSharedPtr<IDetailLayoutBuilder>& InDetailBuilder)
+{
+	WeakDetailBuilder = InDetailBuilder;
+	IDetailCustomization::CustomizeDetails(InDetailBuilder);
+}
 
 void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(IDetailLayoutBuilder& InLayoutBuilder)
 {
@@ -26,6 +31,9 @@ void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(IDetailLayoutBuild
 	DelegatePropertyNameProperty = InLayoutBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UK2Node_BindingEase, DelegatePropertyName));
 
 	BindingEaseCategory.AddProperty(DelegateOwnerClassProperty);
+
+	DelegateOwnerClassProperty->SetOnPropertyValueChanged(FSimpleDelegate::CreateRaw(this, &FK2Node_BindingEaseDetailCustomization::UpdateDelagateSource));
+
 	IDetailPropertyRow& DelegatePropertyNamePropertyRow = BindingEaseCategory.AddProperty(DelegatePropertyNameProperty);
 
 	const auto EditCondition = TAttribute<bool>::CreateLambda([this]() -> bool
@@ -49,17 +57,17 @@ void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(IDetailLayoutBuild
 		[
 			DelegatePropertyNameProperty->CreatePropertyNameWidget()
 		]
-		.ValueContent()
+	.ValueContent()
 		[
 			SNew(SComboBox<FName>)
 			.OptionsSource(&DelegateNames)
-			.OnSelectionChanged(this, &FK2Node_BindingEaseDetailCustomization::HandleComboBoxChanged)
-			.OnGenerateWidget(this, &FK2Node_BindingEaseDetailCustomization::HandleGenerateWidget)
-			.Content()
-			[
-				SNew(STextBlock)
-				.Text(this, &FK2Node_BindingEaseDetailCustomization::HandleComboBoxValueAsText)
-			]
+		.OnSelectionChanged(this, &FK2Node_BindingEaseDetailCustomization::HandleComboBoxChanged)
+		.OnGenerateWidget(this, &FK2Node_BindingEaseDetailCustomization::HandleGenerateWidget)
+		.Content()
+		[
+			SNew(STextBlock)
+			.Text(this, &FK2Node_BindingEaseDetailCustomization::HandleComboBoxValueAsText)
+		]
 		];
 
 }
@@ -82,6 +90,25 @@ void FK2Node_BindingEaseDetailCustomization::UpdateDelagateSource()
 		DelegateNames.Add(DelegateProperty->GetFName());
 		DelegateTooltips.Add(DelegateProperty->GetToolTipText());
 	}
+
+	const FName CurrentValue = GetDelegatePropertyNameValue();
+
+	if (!DelegateNames.Contains(CurrentValue) || DelegateNames.IsEmpty())
+	{
+		// It does not contain a Delegate for the current class and needs to be reset.
+		if (DelegatePropertyNameProperty.IsValid())
+		{
+			DelegatePropertyNameProperty->SetValue(NAME_None);
+		}
+
+		// reset details
+		if (WeakDetailBuilder.IsValid())
+		{
+			IDetailLayoutBuilder* DetailBuilder = WeakDetailBuilder.Pin().Get();
+			DetailBuilder->ForceRefreshDetails();
+		}
+	}
+
 }
 
 void FK2Node_BindingEaseDetailCustomization::HandleComboBoxChanged(FName InItem, ESelectInfo::Type InSeletionInfo)
@@ -105,15 +132,25 @@ TSharedRef<SWidget> FK2Node_BindingEaseDetailCustomization::HandleGenerateWidget
 
 FText FK2Node_BindingEaseDetailCustomization::HandleComboBoxValueAsText() const
 {
+	FName Value = GetDelegatePropertyNameValue();
+	if (Value != NAME_None)
+	{
+		return FText::FromName(Value);
+	}
+	return FText::GetEmpty();
+}
+
+FName FK2Node_BindingEaseDetailCustomization::GetDelegatePropertyNameValue() const
+{
 	if (DelegatePropertyNameProperty.IsValid())
 	{
 		FName Value = NAME_None;
 		if (DelegatePropertyNameProperty->GetValue(Value) == FPropertyAccess::Success)
 		{
-			return FText::FromName(Value);
+			return Value;
 		}
 	}
-	return FText::GetEmpty();
+	return NAME_None;
 }
 
 // End IDetailCustomization interface
