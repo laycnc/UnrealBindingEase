@@ -19,7 +19,13 @@ public class BindingEaseNodes : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"BlueprintGraph"
+				// todo
+				"InputCore",
+				"SlateCore",
+				"UnrealEd",
+				"GraphEditor",
+				"KismetCompiler",
+				"BlueprintGraph",
 			});
 		
 		DynamicallyLoadedModuleNames.AddRange(
