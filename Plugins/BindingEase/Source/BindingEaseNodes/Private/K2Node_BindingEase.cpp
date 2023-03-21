@@ -130,6 +130,9 @@ void UK2Node_BindingEase::InitializeComponentBoundEventParams(const FMulticastDe
 		bOverrideFunction = false;
 		bInternalEvent = true;
 		CachedNodeTitle.MarkDirty();
+
+		// Refresh
+		ReconstructNode();
 	}
 }
 
