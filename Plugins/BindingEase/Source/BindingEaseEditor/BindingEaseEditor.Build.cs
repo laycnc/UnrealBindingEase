@@ -18,12 +18,10 @@ public class BindingEaseEditor : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-			});
-		
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
-				
+				"Slate",
+				"SlateCore",
+				"PropertyEditor",
+				"BindingEaseNodes"
 			});
 	}
 }

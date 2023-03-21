@@ -24,11 +24,11 @@ class UK2Node_BindingEase
 
 public:
 	// The key that is bound
-	UPROPERTY(EditAnywhere, Category="Input", meta = ( DisplayName = ""))
+	UPROPERTY(EditAnywhere, Category="BindingEase")
 	TObjectPtr<UClass> DelegateOwnerClass;
 
 	// Should the binding execute even when the game is paused
-	UPROPERTY(EditAnywhere, Category="Input", meta = ( DisplayName = "EventName"))
+	UPROPERTY(EditAnywhere, Category="BindingEase")
 	FName DelegatePropertyName;
 
 
