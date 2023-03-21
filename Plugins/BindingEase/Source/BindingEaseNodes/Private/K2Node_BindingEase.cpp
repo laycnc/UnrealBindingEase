@@ -33,7 +33,7 @@
 #include "Engine/DynamicBlueprintBinding.h"
 #include "SimplePropertyDelegateBinding.h"
 
-#define LOCTEXT_NAMESPACE "K2Node"
+#define LOCTEXT_NAMESPACE "K2Node_BindingEase"
 
 static TAutoConsoleVariable<bool> CVarBPEnableDeprecatedWarningForComponentDelegateNodes(
 	TEXT("bp.EnableDeprecatedWarningForComponentDelegateNodes"),
@@ -69,22 +69,9 @@ bool UK2Node_BindingEase::Modify(bool bAlwaysMarkDirty)
 
 bool UK2Node_BindingEase::CanPasteHere(const UEdGraph* TargetGraph) const
 {
-	// By default, to be safe, we don't allow events to be pasted, except under special circumstances (see below)
-	bool bDisallowPaste = !Super::CanPasteHere(TargetGraph);
-	if (!bDisallowPaste)
-	{
-#if 0 // todo
-		UBlueprint* BlueprintForGraph = FBlueprintEditorUtils::FindBlueprintForGraph(TargetGraph);
-		if (const UK2Node_Event* PreExistingNode = FKismetEditorUtilities::FindBoundEventForComponent(BlueprintForGraph, DelegatePropertyName, ComponentPropertyName))
-		{
-			//UE_LOG(LogBlueprint, Log, TEXT("Cannot paste event node (%s) directly because it is flagged as an internal event."), *GetFName().ToString());
-			bDisallowPaste = true;
-		}
-#endif
-	}
-	return !bDisallowPaste;
-
+	return Super::CanPasteHere(TargetGraph);
 }
+
 FText UK2Node_BindingEase::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	if (CachedNodeTitle.IsOutOfDate(this))
@@ -154,38 +141,22 @@ void UK2Node_BindingEase::RegisterDynamicBinding(UDynamicBlueprintBinding* Bindi
 	ComponentBindingObject->DelegateBindings.Add(Binding);
 }
 
-void UK2Node_BindingEase::HandleVariableRenamed(UBlueprint* InBlueprint, UClass* InVariableClass, UEdGraph* InGraph, const FName& InOldVarName, const FName& InNewVarName)
-{
-	if (InVariableClass && InVariableClass->IsChildOf(InBlueprint->GeneratedClass))
-	{
-#if 0 // todo
-		// This could be the case if the component that this was originally bound to was removed, and a new one was 
-		// added in it's place. @see UE-88511
-		if (InNewVarName == ComponentPropertyName)
-		{
-			FCompilerResultsLog LogResults;
-			FMessageLog MessageLog("BlueprintLog");
-			LogResults.Error(*LOCTEXT("ComponentBoundEvent_Rename_Error", "There can only be one event node bound to this component! Delete @@ or the other bound event").ToString(), this);
-
-			MessageLog.NewPage(LOCTEXT("ComponentBoundEvent_Rename_Error_Label", "Rename Component Error"));
-			MessageLog.AddMessages(LogResults.Messages);
-			MessageLog.Notify(LOCTEXT("OnConvertEventToFunctionErrorMsg", "Renaming a component"));
-			FKismetEditorUtilities::BringKismetToFocusAttentionOnObject(this);
-		}
-		else if (InOldVarName == ComponentPropertyName)
-		{
-			Modify();
-			ComponentPropertyName = InNewVarName;
-		}
-#endif
-	}
-}
-
 void UK2Node_BindingEase::ValidateNodeDuringCompilation(FCompilerResultsLog& MessageLog) const
 {
 	if (PinValidityCheck::bDisplayMissingBoundComponentWarning && !IsDelegateValid())
 	{
-		MessageLog.Warning(*LOCTEXT("ComponentBoundEvent_Error", "@@ does not have a valid matching component!").ToString(), this);
+		if (DelegateOwnerClass.IsNull())
+		{
+			MessageLog.Warning(*LOCTEXT("BindingEaseEvent_Class_Error", "DelegateOwnerClass was not set for @@.").ToString(), this);
+		}
+		else if (DelegatePropertyName == NAME_None)
+		{
+			MessageLog.Warning(*LOCTEXT("BindingEaseEvent_Property_Error", "DelegatePropertyName was not set for @@.").ToString(), this);
+		}
+		else if (!IsDelegateValid())
+		{
+			MessageLog.Warning(*LOCTEXT("BindingEaseBoundEvent_Error", "@@ does not have a valid Class Delegate.").ToString(), this);
+		}
 	}
 	Super::ValidateNodeDuringCompilation(MessageLog);
 }
@@ -346,7 +317,7 @@ void UK2Node_BindingEase::Serialize(FArchive& Ar)
 				ParentClass = ParentBlueprint->SkeletonGeneratedClass;
 			}
 
-			#if 0 // todo
+#if 0 // todo
 			FObjectProperty* ComponentProperty = ParentClass ? CastField<FObjectProperty>(ParentClass->FindPropertyByName(ComponentPropertyName)) : NULL;
 
 			if (ParentClass && ComponentProperty)
@@ -354,7 +325,7 @@ void UK2Node_BindingEase::Serialize(FArchive& Ar)
 				UE_LOG(LogBlueprint, Warning, TEXT("Repaired invalid component bound event in node %s."), *GetPathName());
 				DelegateOwnerClass = ComponentProperty->PropertyClass;
 			}
-			#endif
+#endif
 		}
 	}
 }
