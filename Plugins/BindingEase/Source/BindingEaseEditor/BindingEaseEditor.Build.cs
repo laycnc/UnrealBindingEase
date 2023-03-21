@@ -20,8 +20,10 @@ public class BindingEaseEditor : ModuleRules
 			{
 				"Slate",
 				"SlateCore",
+				"InputCore",
+				"Documentation",
 				"PropertyEditor",
-				"BindingEaseNodes"
+				"BindingEaseNodes",
 			});
 	}
 }
