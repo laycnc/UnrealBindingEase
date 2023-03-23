@@ -25,11 +25,21 @@ void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(const TSharedPtr<I
 
 void FK2Node_BindingEaseDetailCustomization::CustomizeDetails(IDetailLayoutBuilder& InLayoutBuilder)
 {
-	IDetailCategoryBuilder& BindingEaseCategory = InLayoutBuilder.EditCategory("BindingEase");
 
 	DelegateOwnerClassProperty = InLayoutBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UK2Node_BindingEase, DelegateOwnerClass));
 	DelegatePropertyNameProperty = InLayoutBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UK2Node_BindingEase, DelegatePropertyName));
 
+	{
+		FName Value = NAME_None;
+		if (DelegatePropertyNameProperty->GetValue(Value) == FPropertyAccess::MultipleValues)
+		{
+			// 複数の値が入っている場合には非表示にする
+			InLayoutBuilder.HideCategory("BindingEase");
+			return;
+		}
+	}
+
+	IDetailCategoryBuilder& BindingEaseCategory = InLayoutBuilder.EditCategory("BindingEase");
 	BindingEaseCategory.AddProperty(DelegateOwnerClassProperty);
 
 	DelegateOwnerClassProperty->SetOnPropertyValueChanged(FSimpleDelegate::CreateRaw(this, &FK2Node_BindingEaseDetailCustomization::UpdateDelagateSource));
