@@ -1,3 +1,7 @@
+[日本語版](https://github.com/laycnc/UnrealBindingEase/blob/main/README_jp.md)
+
+Translated with www.DeepL.com/Translator (free version)" based on README_jp.md
+
 # BindingEase
 
 There are several methods of event binding in Blueprint, but they are not very visible or easy to use.  
@@ -64,5 +68,3 @@ Now you can implement the functionality you need.
 
 The actual binding and unbinding of events is done in a batch of functions.  
 Binding and unbinding can be performed by passing an object of the class specified in the created node as an argument.
-
-Translated with www.DeepL.com/Translator (free version)
