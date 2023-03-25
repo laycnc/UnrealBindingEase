@@ -3,6 +3,7 @@
 
 #include "BindingEaseLibrary.h"
 #include "SimplePropertyDelegateBinding.h"
+#include "Engine/BlueprintGeneratedClass.h"
 
 namespace BindingEase
 {
