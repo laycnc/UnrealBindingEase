@@ -50,8 +50,6 @@ Spawn時に公開された変数など、初期化タイミングによっては
 ![Standard Blueprint Binding Methods](https://media.githubusercontent.com/media/laycnc/UnrealBindingEase/image/Doc/Image/BindingEaseMethod.png "Standard Blueprint Binding Methods")
 
 
-
-
 # Binding Easeノードのイベントへの実装方法  
 
 ![Standard Blueprint Binding Methods](https://raw.githubusercontent.com/laycnc/UnrealBindingEase/image/Doc/Image/BindingEase.gif "Standard Blueprint Binding Methods")
@@ -61,3 +59,8 @@ Spawn時に公開された変数など、初期化タイミングによっては
 クラスを選択すると*DelegatePropertyName*を選択できるようになります。  
 バインドしたいイベントをプルダウンから選ぶと、Delegateと同じシグネチャにノードが変化します。  
 あとは必要な機能を実装してください。  
+
+![Standard Blueprint Binding Methods](https://media.githubusercontent.com/media/laycnc/UnrealBindingEase/image/Doc/Image/BindingEaseRegisterAndUnregister.png "Standard Blueprint Binding Methods")
+
+実際のイベントのバインドとアンバインドは関数で一括で行う事になります。  
+作成したノードで指定したクラスのオブジェクトを引数にわたす事でバインドとアンバインドを行う事が出来ます。  
