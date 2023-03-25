@@ -2,13 +2,13 @@
 
 
 #include "BindingEaseLibrary.h"
-#include "SimplePropertyDelegateBinding.h"
+#include "BindingEaseDelegateBinding.h"
 #include "Engine/BlueprintGeneratedClass.h"
 
 namespace BindingEase
 {
 
-	void Foreach(UObject* InBinding, UObject* InDelegateOwner, void (*InPred)(UObject*, UObject*, const FBlueprintSimplePropertyDelegateBinding&))
+	void Foreach(UObject* InBinding, UObject* InDelegateOwner, void (*InPred)(UObject*, UObject*, const FBlueprintBindingEaseDelegateBinding&))
 	{
 		UClass* SelfType = InBinding->GetClass();
 		const UBlueprintGeneratedClass* BPGC = Cast<UBlueprintGeneratedClass>(SelfType);
@@ -18,13 +18,13 @@ namespace BindingEase
 		}
 		for (const UDynamicBlueprintBinding* DynamicBindingObject : BPGC->DynamicBindingObjects)
 		{
-			const USimplePropertyDelegateBinding* Binding = Cast<USimplePropertyDelegateBinding>(DynamicBindingObject);
+			const UBindingEaseDelegateBinding* Binding = Cast<UBindingEaseDelegateBinding>(DynamicBindingObject);
 			if (Binding == nullptr)
 			{
 				continue;
 			}
 
-			for (const FBlueprintSimplePropertyDelegateBinding& DelegateBinding : Binding->DelegateBindings)
+			for (const FBlueprintBindingEaseDelegateBinding& DelegateBinding : Binding->DelegateBindings)
 			{
 				if (InDelegateOwner->GetClass()->IsChildOf(DelegateBinding.DelegateOwnerClass))
 				{
@@ -34,7 +34,7 @@ namespace BindingEase
 		}
 	}
 	
-	void RegisterBinding(UObject* InBinding, UObject* InDelegateOwner, const FBlueprintSimplePropertyDelegateBinding& DelegateBinding)
+	void RegisterBinding(UObject* InBinding, UObject* InDelegateOwner, const FBlueprintBindingEaseDelegateBinding& DelegateBinding)
 	{
 		auto* DelegateProperty = FindFProperty<FMulticastDelegateProperty>(DelegateBinding.DelegateOwnerClass, DelegateBinding.DelegatePropertyName);
 
@@ -46,7 +46,7 @@ namespace BindingEase
 	}
 
 
-	void UnregisterBinding(UObject* InBinding, UObject* InDelegateOwner, const FBlueprintSimplePropertyDelegateBinding& DelegateBinding)
+	void UnregisterBinding(UObject* InBinding, UObject* InDelegateOwner, const FBlueprintBindingEaseDelegateBinding& DelegateBinding)
 	{
 		auto* DelegateProperty = FindFProperty<FMulticastDelegateProperty>(DelegateBinding.DelegateOwnerClass, DelegateBinding.DelegatePropertyName);
 

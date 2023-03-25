@@ -31,7 +31,7 @@
 #include "EditorCategoryUtils.h"
 
 #include "Engine/DynamicBlueprintBinding.h"
-#include "SimplePropertyDelegateBinding.h"
+#include "BindingEaseDelegateBinding.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_BindingEase"
 
@@ -125,14 +125,14 @@ void UK2Node_BindingEase::InitializeComponentBoundEventParams(const FMulticastDe
 
 UClass* UK2Node_BindingEase::GetDynamicBindingClass() const
 {
-	return USimplePropertyDelegateBinding::StaticClass();
+	return UBindingEaseDelegateBinding::StaticClass();
 }
 
 void UK2Node_BindingEase::RegisterDynamicBinding(UDynamicBlueprintBinding* BindingObject) const
 {
-	USimplePropertyDelegateBinding* ComponentBindingObject = CastChecked<USimplePropertyDelegateBinding>(BindingObject);
+	UBindingEaseDelegateBinding* ComponentBindingObject = CastChecked<UBindingEaseDelegateBinding>(BindingObject);
 
-	FBlueprintSimplePropertyDelegateBinding Binding;
+	FBlueprintBindingEaseDelegateBinding Binding;
 	Binding.DelegateOwnerClass = DelegateOwnerClass;
 	Binding.DelegatePropertyName = DelegatePropertyName;
 	Binding.FunctionNameToBind = CustomFunctionName;

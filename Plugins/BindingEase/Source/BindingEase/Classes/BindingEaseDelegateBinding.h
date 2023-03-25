@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Engine/DynamicBlueprintBinding.h"
-#include "SimplePropertyDelegateBinding.generated.h"
+#include "BindingEaseDelegateBinding.generated.h"
 
 class UInputComponent;
 
 USTRUCT()
-struct FBlueprintSimplePropertyDelegateBinding
+struct FBlueprintBindingEaseDelegateBinding
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -28,7 +28,7 @@ struct FBlueprintSimplePropertyDelegateBinding
 };
 
 UCLASS()
-class BINDINGEASE_API USimplePropertyDelegateBinding
+class BINDINGEASE_API UBindingEaseDelegateBinding
 	: public UDynamicBlueprintBinding
 {
 	GENERATED_UCLASS_BODY()
@@ -36,7 +36,7 @@ class BINDINGEASE_API USimplePropertyDelegateBinding
 public:
 
 	UPROPERTY()
-	TArray<FBlueprintSimplePropertyDelegateBinding> DelegateBindings;
+	TArray<FBlueprintBindingEaseDelegateBinding> DelegateBindings;
 
 
 };
